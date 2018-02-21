@@ -1,6 +1,7 @@
 import argparse
 import time
 
+import cv2 # Importing just to solve torch segmentation fault
 import torch
 from PIL import Image
 from torch.autograd import Variable
