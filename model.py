@@ -28,6 +28,7 @@ class Generator(nn.Module):
 
     def forward(self, x):
         block1 = self.block1(x)
+        print("Bottleneck Size: ", block1.size())
         block2 = self.block2(block1)
         block3 = self.block3(block2)
         block4 = self.block4(block3)
@@ -36,7 +37,9 @@ class Generator(nn.Module):
         block7 = self.block7(block6)
         block8 = self.block8(block1 + block7)
 
-        return (F.tanh(block8) + 1) / 2
+        out = (F.tanh(block8) + 1) / 2
+        print ("netG Output size: ", out.size())
+        return out
 
 
 class Discriminator(nn.Module):
@@ -81,6 +84,7 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, x):
+        print("netD Input Tensor Size: ", x.size())
         batch_size = x.size(0)
         return F.sigmoid(self.net(x).view(batch_size))
 
@@ -95,13 +99,20 @@ class ResidualBlock(nn.Module):
         self.bn2 = nn.BatchNorm2d(channels)
 
     def forward(self, x):
+        print("Input Size: ", x.size())
+
         residual = self.conv1(x)
         residual = self.bn1(residual)
         residual = self.prelu(residual)
         residual = self.conv2(residual)
         residual = self.bn2(residual)
 
-        return x + residual
+        print("Output Size: ", x.size())
+        
+        out = x + residual
+        print("Output Concat Size: ", out.size())
+
+        return out
 
 
 class UpsampleBLock(nn.Module):

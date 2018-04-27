@@ -23,11 +23,14 @@ if __name__ == "__main__":
     MODEL_NAME = opt.model_name
 
     model = Generator(UPSCALE_FACTOR).eval()
+
+    # for GPU
     if torch.cuda.is_available():
         model = model.cuda()
+    model.load_state_dict(torch.load('epochs/' + MODEL_NAME))
+
     # for cpu
     # model.load_state_dict(torch.load('epochs/' + MODEL_NAME, map_location=lambda storage, loc: storage))
-    model.load_state_dict(torch.load('epochs/' + MODEL_NAME))
 
     videoCapture = cv2.VideoCapture(VIDEO_NAME)
     fps = videoCapture.get(cv2.CAP_PROP_FPS)

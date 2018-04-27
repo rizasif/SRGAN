@@ -13,7 +13,8 @@ from tqdm import tqdm
 import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
-from model import Generator, Discriminator
+# from model import Generator, Discriminator
+from DenseModel import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int, help='training images crop size')
@@ -27,13 +28,16 @@ CROP_SIZE = opt.crop_size
 UPSCALE_FACTOR = opt.upscale_factor
 NUM_EPOCHS = opt.num_epochs
 
-train_set = TrainDatasetFromFolder('data/VOC2012/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-val_set = ValDatasetFromFolder('data/VOC2012/val', upscale_factor=UPSCALE_FACTOR)
-train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=64, shuffle=True)
+train_set = TrainDatasetFromFolder('data/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+val_set = ValDatasetFromFolder('data/val', upscale_factor=UPSCALE_FACTOR)
+train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=16, shuffle=True) #64
 val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
 
 netG = Generator(UPSCALE_FACTOR)
 print('# generator parameters:', sum(param.numel() for param in netG.parameters()))
+# for param in netG.parameters():
+#     print("---------")
+#     print(param.size())
 netD = Discriminator()
 print('# discriminator parameters:', sum(param.numel() for param in netD.parameters()))
 
@@ -43,6 +47,9 @@ if torch.cuda.is_available():
     netG.cuda()
     netD.cuda()
     generator_criterion.cuda()
+
+# optimizerG = optim.Adam(netG.parameters(), weight_decay=1e-5)
+# optimizerD = optim.Adam(netD.parameters())
 
 optimizerG = optim.Adam(netG.parameters())
 optimizerD = optim.Adam(netD.parameters())
@@ -70,6 +77,8 @@ for epoch in range(1, NUM_EPOCHS + 1):
         if torch.cuda.is_available():
             z = z.cuda()
         fake_img = netG(z)
+        # print("NetG Output: ", fake_img.size())
+        # print("Real image: ", real_img.size())
 
         netD.zero_grad()
         real_out = netD(real_img).mean()
@@ -116,7 +125,12 @@ for epoch in range(1, NUM_EPOCHS + 1):
         if torch.cuda.is_available():
             lr = lr.cuda()
             hr = hr.cuda()
+        # print("LR: ", lr.size()) #torch.Size([1, 3, 72, 72])
         sr = netG(lr)
+
+        # print("SR: ", sr.size())
+        # print("HR: ", hr.size())
+        # Idead Size torch.Size([1, 3, 288, 288])
 
         batch_mse = ((sr - hr) ** 2).data.mean()
         valing_results['mse'] += batch_mse * batch_size
@@ -143,6 +157,7 @@ for epoch in range(1, NUM_EPOCHS + 1):
     # save model parameters
     torch.save(netG.state_dict(), 'epochs/netG_epoch_%d_%d.pth' % (UPSCALE_FACTOR, epoch))
     torch.save(netD.state_dict(), 'epochs/netD_epoch_%d_%d.pth' % (UPSCALE_FACTOR, epoch))
+    
     # save loss\scores\psnr\ssim
     results['d_loss'].append(running_results['d_loss'] / running_results['batch_sizes'])
     results['g_loss'].append(running_results['g_loss'] / running_results['batch_sizes'])
@@ -158,3 +173,6 @@ for epoch in range(1, NUM_EPOCHS + 1):
                   'Score_G': results['g_score'], 'PSNR': results['psnr'], 'SSIM': results['ssim']},
             index=range(1, epoch + 1))
         data_frame.to_csv(out_path + 'srf_' + str(UPSCALE_FACTOR) + '_train_results.csv', index_label='Epoch')
+
+    # if epoch == NUM_EPOCHS:
+    #     torch.save(netG, 'epochs/netG_model.pth')

@@ -1,18 +1,23 @@
 import argparse
 import time
 
+import cv2 # Importing just to solve torch segmentation fault
 import torch
 from PIL import Image
 from torch.autograd import Variable
 from torchvision.transforms import ToTensor, ToPILImage
+import torch
 
-from model import Generator
+# from model import Generator
+from DenseModel import Generator
+
 
 parser = argparse.ArgumentParser(description='Test Single Image')
 parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
 parser.add_argument('--test_mode', default='GPU', type=str, choices=['GPU', 'CPU'], help='using GPU or CPU')
 parser.add_argument('--image_name', type=str, help='test low resolution image name')
 parser.add_argument('--model_name', default='netG_epoch_4_100.pth', type=str, help='generator model epoch name')
+# parser.add_argument('--model_name', default='netG_model.pth', type=str, help='generator model epoch name')
 opt = parser.parse_args()
 
 UPSCALE_FACTOR = opt.upscale_factor
@@ -24,6 +29,8 @@ model = Generator(UPSCALE_FACTOR).eval()
 if TEST_MODE:
     model.cuda()
     model.load_state_dict(torch.load('epochs/' + MODEL_NAME))
+    # model = torch.load('epochs/' + MODEL_NAME)
+    # model.eval()
 else:
     model.load_state_dict(torch.load('epochs/' + MODEL_NAME, map_location=lambda storage, loc: storage))
 
