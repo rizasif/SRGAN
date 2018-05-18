@@ -102,7 +102,8 @@ class Generator(nn.Module):
         # print ("----forward end------")
         
         # Desired Size torch.Size([6, 3, 88, 88])
-        out = F.sigmoid(block11)
+        # out = F.sigmoid(block11)
+        out = (F.tanh(block11) + 1) / 2
         # print("netG Output Size: ", out.size())
 
         return out
@@ -188,17 +189,17 @@ class DenseBlock(nn.Module):
         # self.relu6a = nn.PReLU()
         # self.relu7a = nn.PReLU()
 
-        self.relu1c = nn.PReLU()
-        self.relu2c = nn.PReLU()
-        self.relu3c = nn.PReLU()
-        self.relu4c = nn.PReLU()
-        self.relu5c = nn.PReLU()
+        # self.relu1c = nn.PReLU()
+        # self.relu2c = nn.PReLU()
+        # self.relu3c = nn.PReLU()
+        # self.relu4c = nn.PReLU()
+        # self.relu5c = nn.PReLU()
 
-        self.bn1c = nn.BatchNorm2d(channels)
-        self.bn2c = nn.BatchNorm2d(channels)
-        self.bn3c = nn.BatchNorm2d(channels)
-        self.bn4c = nn.BatchNorm2d(channels)
-        self.bn5c = nn.BatchNorm2d(channels)
+        # self.bn1c = nn.BatchNorm2d(channels)
+        # self.bn2c = nn.BatchNorm2d(channels)
+        # self.bn3c = nn.BatchNorm2d(channels)
+        # self.bn4c = nn.BatchNorm2d(channels)
+        # self.bn5c = nn.BatchNorm2d(channels)
         # self.bn6b = nn.BatchNorm2d(channels*6)
         # self.bn7b = nn.BatchNorm2d(channels*7)
 
@@ -210,35 +211,35 @@ class DenseBlock(nn.Module):
         # self.bn6a = nn.BatchNorm2d(channels*6)
         # self.bn7a = nn.BatchNorm2d(channels*7)
 
-        self.bn1b = nn.BatchNorm2d(channels*1)
-        self.bn2b = nn.BatchNorm2d((channels*2)/2)
-        self.bn3b = nn.BatchNorm2d((channels*3)/2)
-        self.bn4b = nn.BatchNorm2d((channels*4)/2)
-        self.bn5b = nn.BatchNorm2d((channels*5)/2)
+        self.bn1b = nn.BatchNorm2d(channels)
+        self.bn2b = nn.BatchNorm2d(channels)
+        self.bn3b = nn.BatchNorm2d(channels)
+        self.bn4b = nn.BatchNorm2d(channels)
+        self.bn5b = nn.BatchNorm2d(channels)
 
         
-        self.conv1c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
-        self.conv2c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
-        self.conv3c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
-        self.conv4c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
-        self.conv5c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        # self.conv1c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        # self.conv2c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        # self.conv3c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        # self.conv4c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        # self.conv5c = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
         # self.conv6b = nn.Conv2d(channels*6, channels, stride=1, padding=1, kernel_size=3)
         # self.conv7b = nn.Conv2d(channels*7, channels, stride=1, padding=1, kernel_size=3)
 
         self.conv1a = nn.Conv2d(channels*1, channels, stride=1, padding=0, kernel_size=1)
-        self.conv2a = nn.Conv2d(channels*2, (channels*2)/2, stride=1, padding=0, kernel_size=1)
-        self.conv3a = nn.Conv2d(channels*3, (channels*3)/2, stride=1, padding=0, kernel_size=1)
-        self.conv4a = nn.Conv2d(channels*4, (channels*4)/2, stride=1, padding=0, kernel_size=1)
-        self.conv5a = nn.Conv2d(channels*5, (channels*5)/2, stride=1, padding=0, kernel_size=1)
+        self.conv2a = nn.Conv2d(channels*2, channels, stride=1, padding=0, kernel_size=1)
+        self.conv3a = nn.Conv2d(channels*3, channels, stride=1, padding=0, kernel_size=1)
+        self.conv4a = nn.Conv2d(channels*4, channels, stride=1, padding=0, kernel_size=1)
+        self.conv5a = nn.Conv2d(channels*5, channels, stride=1, padding=0, kernel_size=1)
         # self.conv6a = nn.Conv2d(channels*6, channels*6, stride=1, padding=0, kernel_size=1)
         # self.conv7a = nn.Conv2d(channels*7, channels*7, stride=1, padding=0, kernel_size=1)
 
         self.conv1b = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
-        self.conv2b = nn.Conv2d((channels*2)/2, channels, stride=1, padding=1, kernel_size=3)
-        self.conv3b = nn.Conv2d((channels*3)/2, channels, stride=1, padding=1, kernel_size=3)
-        self.conv4b = nn.Conv2d((channels*4)/2, channels, stride=1, padding=1, kernel_size=3)
-        self.conv5b = nn.Conv2d((channels*5)/2, channels, stride=1, padding=1, kernel_size=3)
-
+        self.conv2b = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        self.conv3b = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        self.conv4b = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        self.conv5b = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
+        
         # self.batch_normb = nn.BatchNorm2d(channels)
         # self.batch_norma = nn.BatchNorm2d(channels)
         # self.convb = nn.Conv2d(channels, channels, stride=1, padding=1, kernel_size=3)
@@ -285,9 +286,6 @@ class DenseBlock(nn.Module):
         # print("dense size relu1b: ", dense.size())
         dense = self.conv1b(dense)
         # print("dense size conv1b: ", dense.size())
-        dense = self.bn1c(dense)
-        dense = self.relu1c(dense)
-        dense = self.conv1c(dense)
         dense = self.dropout(dense)
 
         nodes.append(dense)
@@ -306,9 +304,6 @@ class DenseBlock(nn.Module):
         # print("dense size relu2b: ", dense.size())
         dense = self.conv2b(dense)
         # print("dense size conv2b: ", dense.size())
-        dense = self.bn2c(dense)
-        dense = self.relu2c(dense)
-        dense = self.conv2c(dense)
         dense = self.dropout(dense)
 
         nodes.append(dense)
@@ -327,9 +322,6 @@ class DenseBlock(nn.Module):
         # print("dense size relu3b: ", dense.size())
         dense = self.conv3b(dense)
         # print("dense size conv3b: ", dense.size())
-        dense = self.bn3c(dense)
-        dense = self.relu3c(dense)
-        dense = self.conv3c(dense)
         dense = self.dropout(dense)
 
         nodes.append(dense)
@@ -348,9 +340,6 @@ class DenseBlock(nn.Module):
         # print("dense size relu4b: ", dense.size())
         dense = self.conv4b(dense)
         # print("dense size conv4b: ", dense.size())
-        dense = self.bn4c(dense)
-        dense = self.relu4c(dense)
-        dense = self.conv4c(dense)
         dense = self.dropout(dense)
 
         nodes.append(dense)
@@ -362,10 +351,8 @@ class DenseBlock(nn.Module):
         dense = self.bn5b(dense)
         dense = self.relu5b(dense)
         dense = self.conv5b(dense)
-        dense = self.bn5c(dense)
-        dense = self.relu5c(dense)
-        dense = self.conv5c(dense)
         dense = self.dropout(dense)
+
 
         # nodes.append(dense)
 
